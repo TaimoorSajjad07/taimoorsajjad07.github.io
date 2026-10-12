@@ -1518,7 +1518,7 @@ function renderFlashUI() {
     <div class="leitner-boxes">
       ${boxCounts.map((c, i) => `
         <div class="leitner-box">
-          <div class="box-num" style="color:${boxColors[i]}">Box ${i + 1}</div>
+          <div class="box-num" style="--hue:${boxColors[i]}">Box ${i + 1}</div>
           <div class="box-name">${boxNames[i]}</div>
           <div class="box-lbl">${boxIntervals[i]}</div>
           <div class="box-count">${c} card${c !== 1 ? 's' : ''}</div>
@@ -3322,7 +3322,7 @@ function assignRanks(rows) {
 
 function rankChip(tier) {
   const r = RANKS[tier] || RANKS[0];
-  return `<span class="rank-chip" style="color:${r.col};border-color:${r.col}40;background:${r.col}14">${r.icon} ${r.name}</span>`;
+  return `<span class="rank-chip" style="--rank:${r.col}">${r.icon} ${r.name}</span>`;
 }
 
 /* ---- SEASONS ----
@@ -3867,7 +3867,7 @@ function renderLeaderboardByTier() {
       const mine = members.some(r => r.me);
       return `
         <div class="lb-tier${mine ? ' mine' : ''}">
-          <div class="lb-tier-head" style="color:${t.col}">
+          <div class="lb-tier-head" style="--rank:${t.col}">
             <span>${t.icon} ${t.name}</span>
             <span class="lb-tier-count">${sizes[i]} place${sizes[i] !== 1 ? 's' : ''} · ${RANKS[i].share}% of players${mine ? ' · your division' : ''}</span>
           </div>
@@ -5071,7 +5071,7 @@ function renderRAGSummary() {
       const pct = codes.length ? Math.round((g / codes.length) * 100) : 0;
       return `<div class="stat-box" style="min-width:100px">
         <div class="num" style="color:${sectionColour(l)}">${l}</div>
-        <div style="font-size:12px;margin:4px 0"><span style="color:var(--green)">✓${g}</span> <span style="color:var(--amber)">~${a}</span> <span style="color:var(--red)">✗${r}</span></div>
+        <div style="font-size:12px;margin:4px 0"><span style="color:var(--green)">✓${g}</span> <span style="color:var(--amber-text)">~${a}</span> <span style="color:var(--red)">✗${r}</span></div>
         <div class="progress-bar-wrap"><div class="progress-bar" style="width:${pct}%;background:${sectionColour(l)}"></div></div>
         <div class="lbl">${pct}%</div>
       </div>`;
