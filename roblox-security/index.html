@@ -1,4 +1,5 @@
 <!doctype html>
+<!-- Built by tools/build_roblox_page.py from roblox-security/source/. Edit those files, not index.html. -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -115,10 +116,7 @@ tr:last-child td { border-bottom: 0; }
 <div class="meta"><strong>lce_te</strong><span class="role">reviewer</span><span class="when">12 October 2026</span></div>
 <p>I review Roblox games for the mistakes exploiters use: remotes that trust the client, prices and rewards decided by the player, race conditions, and fake admin checks. You get a written report with each finding, how it is abused, how to fix it, and how the fix was checked.</p>
 <p>I am new to this. This review is of a test game I built for the purpose, not a client project. I only test games I own or have written permission to test.</p>
-<dl class="facts">
-<dt>Scope</dt><dd>one server script (five RemoteEvents: GrantCoins, BuyItem, SaveData, SellItem, AdminCommand) in a test game I built for this review. It is a lab, not a client game.</dd>
-<dt>Method</dt><dd>manual code review, then each finding tested in a private, unpublished place using a test client that fires the same remote calls an exploiter would. Every fix was re-tested against the same attacks.</dd>
-</dl>
+<dl class="facts"><dt>Scope</dt><dd>one server script (five RemoteEvents: GrantCoins, BuyItem, SaveData, SellItem, AdminCommand) in a test game I built for this review. It is a lab, not a client game.</dd><dt>Method</dt><dd>manual code review, then each finding tested in a private, unpublished place using a test client that fires the same remote calls an exploiter would. Every fix was re-tested against the same attacks.</dd></dl>
 </div>
 </article>
 <article class="post">
@@ -134,49 +132,56 @@ tr:last-child td { border-bottom: 0; }
 <div class="who"><span class="avatar" aria-hidden="true">L</span></div>
 <div class="what">
 <div class="meta"><strong>lce_te</strong><span class="role">reviewer</span><span class="when">12 October 2026</span></div>
-<h2 id="f1">1. GrantCoins <span class="chip sev-critical">Critical</span></h2><dl class="facts"><dt>What is wrong</dt><dd>the remote adds whatever number the client sends to the player's coins.</dd><dt>How it can be abused</dt><dd><code>GrantCoins:FireServer(1000000)</code>. Result in the test: 100 coins became 1,000,100.</dd><dt>Impact</dt><dd>unlimited currency for any player.</dd><dt>Fix</dt><dd>the client only says which pickup it touched, and the server looks up the reward in its own table, with a rate limit. Better still, detect pickups on the server and remove the remote.</dd><dt>Verification</dt><dd>the same call is ignored.</dd></dl>
+<h2 id="f1">1. GrantCoins <span class="chip sev-critical">Critical</span></h2>
+<dl class="facts"><dt>What is wrong</dt><dd>the remote adds whatever number the client sends to the player's coins.</dd><dt>How it can be abused</dt><dd><code>GrantCoins:FireServer(1000000)</code>. Result in the test: 100 coins became 1,000,100.</dd><dt>Impact</dt><dd>unlimited currency for any player.</dd><dt>Fix</dt><dd>the client only says which pickup it touched, and the server looks up the reward in its own table, with a rate limit. Better still, detect pickups on the server and remove the remote.</dd><dt>Verification</dt><dd>the same call is ignored.</dd></dl>
 </div>
 </article>
 <article class="post">
 <div class="who"><span class="avatar" aria-hidden="true">L</span></div>
 <div class="what">
 <div class="meta"><strong>lce_te</strong><span class="role">reviewer</span><span class="when">12 October 2026</span></div>
-<h2 id="f2">2. BuyItem <span class="chip sev-critical">Critical</span></h2><dl class="facts"><dt>What is wrong</dt><dd>The client supplies the price. Negative values pass the <code>coins &gt;= -5000</code> check, so subtracting one increases the player's coin balance.</dd><dt>How it can be abused</dt><dd><code>BuyItem:FireServer("Sword", -5000)</code>. Result: bought a Sword and gained 5,000 coins.</dd><dt>Impact</dt><dd>unlimited currency and free items.</dd><dt>Fix</dt><dd>the server keeps a catalog of prices and ignores any price the client sends. Unknown item ids are rejected.</dd><dt>Verification</dt><dd>the same call buys one Sword at the real price of 100.</dd></dl>
+<h2 id="f2">2. BuyItem <span class="chip sev-critical">Critical</span></h2>
+<dl class="facts"><dt>What is wrong</dt><dd>The client supplies the price. Negative values pass the <code>coins &gt;= -5000</code> check, so subtracting one increases the player's coin balance.</dd><dt>How it can be abused</dt><dd><code>BuyItem:FireServer("Sword", -5000)</code>. Result: bought a Sword and gained 5,000 coins.</dd><dt>Impact</dt><dd>unlimited currency and free items.</dd><dt>Fix</dt><dd>the server keeps a catalog of prices and ignores any price the client sends. Unknown item ids are rejected.</dd><dt>Verification</dt><dd>the same call buys one Sword at the real price of 100.</dd></dl>
 </div>
 </article>
 <article class="post">
 <div class="who"><span class="avatar" aria-hidden="true">L</span></div>
 <div class="what">
 <div class="meta"><strong>lce_te</strong><span class="role">reviewer</span><span class="when">12 October 2026</span></div>
-<h2 id="f3">3. SaveData <span class="chip sev-critical">Critical</span></h2><dl class="facts"><dt>What is wrong</dt><dd>The client submits its entire profile, which the server stores without validation.</dd><dt>How it can be abused</dt><dd>send a table with any coins, level and inventory. Result: coins 999,999, level 100, 99 Swords.</dd><dt>Impact</dt><dd>total control over the player's state. In a real game this would also be written to the DataStore.</dd><dt>Fix</dt><dd>delete the remote. Deleting SaveData removes the client's ability to write arbitrary profile data at all. Validation would still treat client-provided values as authoritative and could miss unexpected fields or malicious changes. The server should own the profile and save only state produced by trusted server logic.</dd><dt>Verification</dt><dd>the remote no longer exists, so the call cannot be made.</dd></dl>
+<h2 id="f3">3. SaveData <span class="chip sev-critical">Critical</span></h2>
+<dl class="facts"><dt>What is wrong</dt><dd>The client submits its entire profile, which the server stores without validation.</dd><dt>How it can be abused</dt><dd>send a table with any coins, level and inventory. Result: coins 999,999, level 100, 99 Swords.</dd><dt>Impact</dt><dd>total control over the player's state. In a real game this would also be written to the DataStore.</dd><dt>Fix</dt><dd>delete the remote. Deleting SaveData removes the client's ability to write arbitrary profile data at all. Validation would still treat client-provided values as authoritative and could miss unexpected fields or malicious changes. The server should own the profile and save only state produced by trusted server logic.</dd><dt>Verification</dt><dd>the remote no longer exists, so the call cannot be made.</dd></dl>
 </div>
 </article>
 <article class="post">
 <div class="who"><span class="avatar" aria-hidden="true">L</span></div>
 <div class="what">
 <div class="meta"><strong>lce_te</strong><span class="role">reviewer</span><span class="when">12 October 2026</span></div>
-<h2 id="f4">4. SellItem <span class="chip sev-high">High</span></h2><dl class="facts"><dt>What is wrong</dt><dd>The server verifies that the player owns the item, waits to simulate a DataStore or marketplace call, and then removes it. Requests received during the delay can all pass the ownership check.</dd><dt>How it can be abused</dt><dd>fire the remote 20 times at once. <code>task.wait</code> pauses the first call before the item is removed. It does not lock the inventory or reserve the item. While the first call is waiting, the other 19 calls run, see that the Sword is still present, and pass the same ownership check. They then all resume and award coins. Result: 2 Swords sold 20 times, coins 100 to 1,100, Sword count -18.</dd><dt>Impact</dt><dd>duplicated currency for items the player never had.</dd><dt>Fix</dt><dd>change the state first, then yield. Each call then sees the updated inventory.</dd><dt>Verification</dt><dd>the same 20 calls sell exactly 2 Swords and the count stops at 0.</dd></dl>
+<h2 id="f4">4. SellItem <span class="chip sev-high">High</span></h2>
+<dl class="facts"><dt>What is wrong</dt><dd>The server verifies that the player owns the item, waits to simulate a DataStore or marketplace call, and then removes it. Requests received during the delay can all pass the ownership check.</dd><dt>How it can be abused</dt><dd>fire the remote 20 times at once. <code>task.wait</code> pauses the first call before the item is removed. It does not lock the inventory or reserve the item. While the first call is waiting, the other 19 calls run, see that the Sword is still present, and pass the same ownership check. They then all resume and award coins. Result: 2 Swords sold 20 times, coins 100 to 1,100, Sword count -18.</dd><dt>Impact</dt><dd>duplicated currency for items the player never had.</dd><dt>Fix</dt><dd>change the state first, then yield. Each call then sees the updated inventory.</dd><dt>Verification</dt><dd>the same 20 calls sell exactly 2 Swords and the count stops at 0.</dd></dl>
 </div>
 </article>
 <article class="post">
 <div class="who"><span class="avatar" aria-hidden="true">L</span></div>
 <div class="what">
 <div class="meta"><strong>lce_te</strong><span class="role">reviewer</span><span class="when">12 October 2026</span></div>
-<h2 id="f5">5. AdminCommand <span class="chip sev-critical">Critical</span></h2><dl class="facts"><dt>What is wrong</dt><dd>The server determines admin status using a <code>rank</code> value supplied by the client.</dd><dt>How it can be abused</dt><dd><code>AdminCommand:FireServer("givecoins", name, 50000, 99)</code>. Result: +50,000 coins.</dd><dt>Impact</dt><dd>any player can run admin commands.</dd><dt>Fix</dt><dd>check the player's UserId against a server-side allowlist, allow only known commands, and validate the arguments (type, integer, range).</dd><dt>Verification</dt><dd>the same call is ignored.</dd></dl>
+<h2 id="f5">5. AdminCommand <span class="chip sev-critical">Critical</span></h2>
+<dl class="facts"><dt>What is wrong</dt><dd>The server determines admin status using a <code>rank</code> value supplied by the client.</dd><dt>How it can be abused</dt><dd><code>AdminCommand:FireServer("givecoins", name, 50000, 99)</code>. Result: +50,000 coins.</dd><dt>Impact</dt><dd>any player can run admin commands.</dd><dt>Fix</dt><dd>check the player's UserId against a server-side allowlist, allow only known commands, and validate the arguments (type, integer, range).</dd><dt>Verification</dt><dd>the same call is ignored.</dd></dl>
 </div>
 </article>
 <article class="post">
 <div class="who"><span class="avatar" aria-hidden="true">L</span></div>
 <div class="what">
 <div class="meta"><strong>lce_te</strong><span class="role">reviewer</span><span class="when">12 October 2026</span></div>
-<h2 id="recommendations">Recommendations</h2><ol><li>Never trust the client for values, prices, identity or ownership. The client asks for an action, the server decides the result.</li><li>Validate every remote argument: type, range, whole number, not NaN.</li><li>Keep prices, rewards and permissions in server-side tables.</li><li>Change state before any yield (DataStore, MarketplaceService, task.wait) so concurrent calls cannot reuse a stale check.</li><li>Rate-limit any remote a client can spam.</li></ol>
+<h2 id="recommendations">Recommendations</h2>
+<ol><li>Never trust the client for values, prices, identity or ownership. The client asks for an action, the server decides the result.</li><li>Validate every remote argument: type, range, whole number, not NaN.</li><li>Keep prices, rewards and permissions in server-side tables.</li><li>Change state before any yield (DataStore, MarketplaceService, task.wait) so concurrent calls cannot reuse a stale check.</li><li>Rate-limit any remote a client can spam.</li></ol>
 </div>
 </article>
 <article class="post">
 <div class="who"><span class="avatar" aria-hidden="true">L</span></div>
 <div class="what">
 <div class="meta"><strong>lce_te</strong><span class="role">reviewer</span><span class="when">12 October 2026</span></div>
-<h2 id="out-of-scope">Out of scope</h2><p>Anything not in the five remotes: DataStore schema, anti-cheat for movement or physics, Roblox platform issues, third-party free models, and any live game. Real games will have flaws this lab does not show.</p>
+<h2 id="out-of-scope">Out of scope</h2>
+<p>Anything not in the five remotes: DataStore schema, anti-cheat for movement or physics, Roblox platform issues, third-party free models, and any live game. Real games will have flaws this lab does not show.</p>
 </div>
 </article>
 
