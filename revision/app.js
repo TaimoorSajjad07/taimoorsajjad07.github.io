@@ -5143,7 +5143,12 @@ function importData() {
         const imported = JSON.parse(ev.target.result);
         let message;
         if (isPlainObject(imported) && isPlainObject(imported.units)) {
-          // A backup from this version: full store, both units.
+          // A backup from this version: full store, both units. It replaces
+          // everything, so the wrong file would wipe all progress without this.
+          if (!confirm('Replace all your progress in this browser with this backup?\n\nBoth units, your theme and your profile will be overwritten. Export your current progress first if you might want it back.')) {
+            toast('Import cancelled.');
+            return;
+          }
           store = coerceStore(imported);
           message = 'Progress imported.';
         } else if (looksLikeLegacyBackup(imported)) {
