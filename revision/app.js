@@ -157,12 +157,36 @@ function coerceLike(def, raw) {
   return typeof raw === 'string' || typeof raw === 'number' ? raw : def;
 }
 
+/* coerceLike keeps any value in a free-form map, and some of these maps reach
+   innerHTML: a string in `activity` turned the Profile total into markup, and a
+   `rag` key was printed on the Plan page. Each map keeps only keys and values of
+   the shape the app itself writes. */
+const SAFE_KEY = /^[A-Za-z0-9._-]{1,64}$/;
+const DATE_KEY = /^\d{4}-\d{2}-\d{2}$/;
+const RAG_VALUES = new Set(['red', 'amber', 'green']);
+
+function keepMap(map, keyRe, valueOk) {
+  Object.keys(map).forEach(k => { if (!keyRe.test(k) || !valueOk(map[k])) delete map[k]; });
+}
+
 function coerceUnit(raw) {
   const unit = coerceLike(defaultUnitState(), raw);
   GLOBAL_KEYS.forEach(k => { delete unit[k]; });   // theme/profile never live in a unit
   // Drafts are a free-form map, so coerceLike keeps any value. Only text is a draft.
   [unit.questions.drafts, unit.extended.drafts].forEach(drafts => {
     Object.keys(drafts).forEach(k => { if (typeof drafts[k] !== 'string') delete drafts[k]; });
+  });
+  const count = v => typeof v === 'number' && isFinite(v) && v >= 0;
+  keepMap(unit.rag, SAFE_KEY, v => RAG_VALUES.has(v));
+  keepMap(unit.reviewed, SAFE_KEY, v => v === true);
+  keepMap(unit.flashcards.boxes, SAFE_KEY, v => Number.isInteger(v) && v >= 1 && v <= 5);
+  keepMap(unit.flashcards.nextDue, SAFE_KEY, v => typeof v === 'string' && DATE_KEY.test(v));
+  keepMap(unit.activity, DATE_KEY, count);
+  keepMap(unit.planChecks, DATE_KEY, isPlainObject);
+  Object.values(unit.planChecks).forEach(day => keepMap(day, SAFE_KEY, v => typeof v === 'boolean'));
+  keepMap(unit.battles.modes, SAFE_KEY, isPlainObject);
+  Object.keys(unit.battles.modes).forEach(k => {
+    unit.battles.modes[k] = coerceLike({ played: 0, won: 0, best: 0 }, unit.battles.modes[k]);
   });
   return unit;
 }
@@ -263,7 +287,8 @@ function coerceStore(raw) {
 function loadStore() {
   let raw = null;
   try { raw = localStorage.getItem(STATE_KEY); } catch { raw = null; }
-  if (!raw) return migrateLegacy();
+  // Legacy blobs come from storage too, so they get the same checks as rev_state.
+  if (!raw) return coerceStore(migrateLegacy());
   try {
     return coerceStore(JSON.parse(raw));
   } catch {
@@ -4564,7 +4589,7 @@ function renderBattleEnd(container) {
 
 function getAchievements() {
   const act = state.activity || {};
-  const totalActs = Object.values(act).reduce((a, b) => a + b, 0);
+  const totalActs = Object.values(act).reduce((a, b) => a + (Number(b) || 0), 0);
   const rc = ragCounts();
   const mastered = Object.values(state.flashcards.boxes || {}).filter(b => b === 5).length;
   const best = getBest('match');
@@ -4606,7 +4631,7 @@ function renderProfile() {
   const me = rows.find(x => x.me);
   const rc = ragCounts();
   const act = state.activity || {};
-  const totalActs = Object.values(act).reduce((a, b) => a + b, 0);
+  const totalActs = Object.values(act).reduce((a, b) => a + (Number(b) || 0), 0);
 
   let last7 = 0;
   for (let i = 0; i < 7; i++) {
@@ -4935,7 +4960,7 @@ function buildDailyPlan() {
 
   const weakCodes = Object.entries(state.rag)
     .filter(([, v]) => v === 'red')
-    .map(([k]) => k)
+    .map(([k]) => escapeHTML(k))   // plan items are rendered as HTML
     .slice(0, 4);
 
   const blocks = [];
