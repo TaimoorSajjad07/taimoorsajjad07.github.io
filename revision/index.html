@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- The app uses inline onclick handlers, so scripts need 'unsafe-inline'. The policy stops any injected script sending data off-site (connect-src, img-src). -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
   <title>BTEC IT Revision</title>
   <meta name="description" content="Revision hub for BTEC National IT — Unit 1 and Unit 2. Flashcards with spaced repetition, exam-style questions, model answers, games and progress tracking.">
   <meta name="theme-color" content="#1B5A5F">
