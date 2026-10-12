@@ -1,33 +1,63 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en-GB">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Page not found · BTEC IT Revision</title>
-  <meta name="robots" content="noindex">
-  <style>
-    :root { --bg: #F5F1E8; --card: #FFFCF6; --text: #2A251F; --text2: #6A6155; --accent: #1B5A5F; --border: #DED7C7; }
-    @media (prefers-color-scheme: dark) {
-      :root { --bg: #1A1714; --card: #221E19; --text: #EDE6DA; --text2: #A2988A; --accent: #6FB3B8; --border: #3A342C; }
-    }
-    * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: 16px;
-           background: var(--bg); color: var(--text);
-           font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-    main { max-width: 420px; text-align: center; background: var(--card); border: 1px solid var(--border);
-           border-radius: 8px; padding: 32px 24px; }
-    h1 { font-size: 22px; margin: 0 0 8px; }
-    p { color: var(--text2); line-height: 1.5; margin: 0 0 20px; }
-    a { display: inline-block; background: var(--accent); color: #fff; text-decoration: none; font-weight: 700;
-        padding: 12px 20px; border-radius: 999px; min-height: 44px; }
-    @media (prefers-color-scheme: dark) { a { color: #1A1714; } }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found | zainsplace</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+/* Pages serves this file for every missing path at any depth, so every link and asset is absolute. */
+:root {
+  --paper: #F3F5F6;
+  --ink: #12161A;
+  --muted: #5B6670;
+  --rule: #C9D0D5;
+  --accent: #2540D9;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #12161A;
+    --ink: #E6EAED;
+    --muted: #9AA5AE;
+    --rule: #2C343B;
+    --accent: #8EA2FF;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.1875rem;
+  line-height: 1.6;
+}
+.wrap { max-width: 40rem; margin: 0 auto; padding: 3.5rem 1rem 4rem; }
+h1 { font-weight: 500; font-size: clamp(2rem, 7vw, 3rem); line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 1rem; }
+p { margin: 0 0 2rem; color: var(--muted); }
+code { font-family: ui-monospace, Consolas, Menlo, monospace; font-size: 0.85em; color: var(--ink); overflow-wrap: anywhere; }
+ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+li { border-bottom: 1px solid var(--rule); padding: 0.75rem 0; }
+a { color: var(--ink); text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+a:hover { color: var(--accent); }
+a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+.note { display: block; color: var(--muted); font-size: 0.9375rem; }
+</style>
 </head>
 <body>
-  <main>
-    <h1>That page doesn't exist</h1>
-    <p>The revision site is all on one page, so there's nothing at this address. Your progress is safe.</p>
-    <a href="/revision/">Back to revision</a>
-  </main>
+<main class="wrap">
+<h1>That page doesn't exist</h1>
+<p>Nothing is at <code id="path">this address</code>.</p>
+<ul>
+<li><a href="/">Portfolio</a></li>
+<li><a href="/roblox-security/">Roblox game security reviews</a></li>
+<li><a href="/revision/">BTEC IT revision</a><span class="note">Your progress is safe.</span></li>
+</ul>
+</main>
+<script>
+document.getElementById('path').textContent = location.pathname;
+</script>
 </body>
 </html>
