@@ -488,6 +488,7 @@ function applyUnitChrome() {
   const u = unitDef();
   document.title = u.label + ' ' + u.name + ' Revision';
   const set = (id, text) => { const n = el(id); if (n) n.textContent = text; };
+  set('app-title', u.label + ' ' + u.name + ' revision');
   set('brand-mark', u.short);
   set('brand-text', u.label + ' ' + u.name.split(' ')[0]);
   set('dash-title', u.label + ' · ' + u.name);
