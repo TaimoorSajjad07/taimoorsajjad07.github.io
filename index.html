@@ -6,7 +6,9 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'">
 <title>zainsplace | Cybersecurity student</title>
 <meta name="description" content="Cybersecurity student. CTFs, bug bounties, security tooling in Python and security reviews for Roblox devs. Working towards cloud security.">
-<meta name="theme-color" content="#F3F5F6">
+<meta name="theme-color" content="#F3F5F6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12161A" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
 <link rel="canonical" href="https://zainsplace.github.io/">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
@@ -15,6 +17,7 @@
 <meta property="og:description" content="Cybersecurity student. CTFs, bug bounties, security tooling in Python and security reviews for Roblox devs. Working towards cloud security.">
 <meta name="twitter:card" content="summary">
 <link rel="preload" href="/fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/jetbrains-mono-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>
 /* Self-hosted (fonts/, SIL Open Font License), so no visitor's address goes to a third party.
    Latin subsets of the variable fonts, the same files Google Fonts served. */
@@ -42,6 +45,17 @@
   --accent: #2540D9;
   --wash: rgba(37, 64, 217, 0.1);
 }
+/* Dark is the same page read off a terminal: the hexdump's own habitat. Same roles, one accent. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #12161A;
+    --ink: #E6EAED;
+    --muted: #9AA5AE;
+    --rule: #2C343B;
+    --accent: #8EA2FF;
+    --wash: rgba(142, 162, 255, 0.16);
+  }
+}
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
@@ -52,16 +66,20 @@ body {
   font-size: 1.1875rem;
   line-height: 1.6;
 }
-.wrap { max-width: 60rem; margin: 0 auto; padding: 3.5rem 1.25rem 5rem; }
+/* 52rem keeps the table's text column under about 80 characters while the dump keeps 16 bytes a row. */
+.wrap { max-width: 52rem; margin: 0 auto; padding: 3.5rem 1.25rem 5rem; }
 a { color: var(--ink); text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 3px; }
 a:hover { color: var(--accent); }
 a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
 
 h1 { font-weight: 500; font-size: clamp(3.4rem, 11vw, 7.5rem); line-height: 0.95; letter-spacing: -0.03em; margin: 0 0 1.25rem; }
-.lede { max-width: 34rem; margin: 0 0 1rem; color: var(--ink); }
+.lede { max-width: 34rem; margin: 0 0 1rem; }
+
+.links { display: flex; flex-wrap: wrap; gap: 0.25rem 1.75rem; padding: 0; margin: 0; list-style: none; }
+.links a { display: inline-block; padding: 0.25rem 0; }
 .contact { margin: 0 0 2.5rem; }
 
-/* The one memorable element: a real hexdump of the sentence above. */
+/* The one memorable element: a real hexdump of the text in data-text, typed in once. */
 .dump {
   font-family: "JetBrains Mono", ui-monospace, Consolas, monospace;
   font-size: 0.875rem;
@@ -73,6 +91,10 @@ h1 { font-weight: 500; font-size: clamp(3.4rem, 11vw, 7.5rem); line-height: 0.95
   overflow-x: auto;
   white-space: pre;
 }
+/* Room for the rows before the script fills them, so nothing below jumps.
+   The text is 56 bytes: 4 rows of 16, or 10 rows of 6 on a phone. */
+#dump { min-height: calc(4 * 1.9em + 2rem); }
+#dump:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-radius: 2px; }
 .dump .row { display: block; }
 .dump .off { color: var(--muted); margin-right: 1.5ch; }
 .dump .b { color: var(--muted); transition: color 0.2s; padding: 0 0.1ch; border-radius: 2px; }
@@ -81,7 +103,12 @@ h1 { font-weight: 500; font-size: clamp(3.4rem, 11vw, 7.5rem); line-height: 0.95
 .dump .bar { color: var(--muted); }
 .dump .c { color: var(--accent); opacity: 0; padding: 0 0.05ch; border-radius: 2px; }
 .dump .c.done { opacity: 1; }
+/* While typing: the byte being decoded, and a block cursor where its character lands. */
+.dump .b.cur { color: var(--accent); }
+.dump .c.cur { opacity: 1; color: transparent; background: var(--accent); }
 .dump .on { background: var(--wash); }
+.dump-static { margin: 0 0 4rem; }
+@media (scripting: none) { #dump { display: none; } }
 
 h2 { font-weight: 500; font-size: 1.75rem; line-height: 1.2; letter-spacing: -0.01em; margin: 0 0 1rem; }
 section { margin: 0 0 3.5rem; }
@@ -96,7 +123,6 @@ dl { margin: 0; display: grid; grid-template-columns: 11rem 1fr; gap: 0.6rem 1.5
 dt { color: var(--muted); }
 dd { margin: 0; }
 
-.links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.75rem; padding: 0; margin: 0; list-style: none; }
 .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
 .pair p { margin: 0.25rem 0 0; color: var(--muted); }
 .pair a { font-weight: 500; }
@@ -108,6 +134,7 @@ dd { margin: 0; }
   .pair { grid-template-columns: 1fr; gap: 1.25rem; }
   td:first-child { white-space: normal; }
   .dump { font-size: 0.75rem; }
+  #dump { min-height: calc(10 * 1.9em + 2rem); }
   th:nth-child(2), td:nth-child(2) { padding-right: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .dump .b, .dump .c { transition: none; } }
@@ -123,7 +150,11 @@ dd { margin: 0; }
 <li><a href="https://www.linkedin.com/in/zain-acman/">LinkedIn</a></li>
 <li><a href="https://github.com/zainsplace">GitHub</a></li>
 </ul>
-<div class="dump" id="dump" aria-hidden="true"></div>
+<div class="dump" id="dump" tabindex="0" role="img" data-text="zainsplace // cyber student. ctfs, bug bounties, cloud.&#10;" aria-label="Hexdump of the text: zainsplace // cyber student. ctfs, bug bounties, cloud."></div>
+<noscript><pre class="dump dump-static" aria-hidden="true">00000000  7a 61 69 6e 73 70 6c 61  63 65 20 2f 2f 20 63 79  |zainsplace // cy|
+00000010  62 65 72 20 73 74 75 64  65 6e 74 2e 20 63 74 66  |ber student. ctf|
+00000020  73 2c 20 62 75 67 20 62  6f 75 6e 74 69 65 73 2c  |s, bug bounties,|
+00000030  20 63 6c 6f 75 64 2e 0a                           | cloud..|</pre></noscript>
 
 <section>
 <h2>Projects</h2>
