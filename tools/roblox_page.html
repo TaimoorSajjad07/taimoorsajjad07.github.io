@@ -10,11 +10,21 @@
 <meta name="theme-color" content="#222222">
 <link rel="canonical" href="https://zainsplace.github.io/roblox-security/">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<meta property="og:type" content="website">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="zainsplace">
+<meta property="article:published_time" content="{{date_iso}}">
 <meta property="og:url" content="https://zainsplace.github.io/roblox-security/">
 <meta property="og:title" content="{{title}}">
 <meta property="og:description" content="{{description}}">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://zainsplace.github.io/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="zainsplace: cybersecurity student. Security tooling, reviews and write-ups.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{title}}">
+<meta name="twitter:description" content="{{description}}">
+<meta name="twitter:image" content="https://zainsplace.github.io/og.png">
+<script type="application/ld+json">{{jsonld}}</script>
 <style>
 :root {
   --bg: #222222;
@@ -41,7 +51,7 @@ code { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-siz
 .bar { background: var(--bar); border-bottom: 1px solid var(--line); }
 .bar .in { max-width: 58rem; margin: 0 auto; padding: 0.8rem 1rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
 .bar .brand { font-weight: 600; color: var(--text); }
-.bar nav { display: flex; gap: 1.25rem; margin-left: auto; }
+.bar nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; margin-left: auto; }
 .bar nav a { color: var(--muted); }
 .bar nav a:hover { color: var(--text); text-decoration: none; }
 
@@ -50,6 +60,8 @@ code { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-siz
 .crumbs { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-bottom: 1.5rem; color: var(--muted); font-size: 0.9rem; }
 .cat { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--text); }
 .cat::before { content: ""; width: 0.7rem; height: 0.7rem; background: var(--link); display: inline-block; border-radius: 2px; }
+.byline { margin: -0.75rem 0 1.5rem; color: var(--muted); font-size: 0.9rem; }
+.byline a { text-decoration: underline; text-underline-offset: 2px; }
 .tag { background: #333; border-radius: 4px; padding: 0.05rem 0.5rem; color: var(--muted); font-size: 0.85rem; }
 
 .post { display: grid; grid-template-columns: 3.25rem minmax(0, 1fr); gap: 0.9rem; padding: 1.1rem 0; border-top: 1px solid var(--line); }
@@ -83,6 +95,7 @@ tr:last-child td { border-bottom: 0; }
 .contact p { margin: 0; }
 
 @media (max-width: 40rem) {
+  .bar nav { gap: 0.25rem 1rem; margin-left: 0; }
   .post { grid-template-columns: minmax(0, 1fr); }
   .who { display: none; }
   .facts { grid-template-columns: 1fr; gap: 0; }
@@ -101,13 +114,14 @@ tr:last-child td { border-bottom: 0; }
 <body>
 <header class="bar"><div class="in">
 <a class="brand" href="/roblox-security/">Game security reviews</a>
-<nav aria-label="Site"><a href="/">Portfolio</a><a href="#summary">Summary</a><a href="#recommendations">Recommendations</a></nav>
+<nav aria-label="Site"><a href="/">Portfolio</a><a href="#summary">Summary</a><a href="#f1">Findings</a><a href="#recommendations">Recommendations</a></nav>
 </div></header>
 
 <main class="page">
 <div class="title">
 <h1>{{heading}}</h1>
 <div class="crumbs">{{crumbs}}</div>
+<p class="byline">By <a href="/">Zain</a>, lce_te on Roblox · <a href="/writeups/">More write-ups</a></p>
 </div>
 
 {{posts}}

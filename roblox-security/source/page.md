@@ -10,7 +10,7 @@ role: reviewer
 
 I review Roblox games for the mistakes exploiters use: remotes that trust the client, prices and rewards decided by the player, race conditions, and fake admin checks. You get a written report with each finding, how it is abused, how to fix it, and how the fix was checked.
 
-I am new to this. This review is of a test game I built for the purpose, not a client project. I only test games I own or have written permission to test.
+This is a controlled lab case study, not a client engagement: the game is a test place I built for this review. I only test games I own or have written permission to test.
 
 ## Contact
 

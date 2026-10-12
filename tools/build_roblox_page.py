@@ -17,7 +17,9 @@ than guessing. Standard library only.
 """
 
 import argparse
+import datetime
 import html
+import json
 import re
 import sys
 from pathlib import Path
@@ -123,7 +125,10 @@ def render_table(rows):
             raise BuildError('table row has %d cells, header has %d: %s' % (len(row), len(head), row))
         out.append('<tr>')
         for col, cell in zip(cols, row):
-            if col == 'severity':
+            if col == 'finding' and '#' in cols and row[cols.index('#')].isdigit():
+                # Each summary row jumps to its finding, whose heading has id fN.
+                out.append('<td><a href="#f%s">%s</a></td>' % (row[cols.index('#')], inline(cell)))
+            elif col == 'severity':
                 out.append('<td>%s</td>' % chip(cell, SEVERITY_CLASS, 'severity'))
             elif col == 'status':
                 out.append('<td>%s</td>' % chip(cell, STATUS_CLASS, 'status'))
@@ -211,6 +216,10 @@ def build():
         if key not in info:
             raise BuildError('%s needs a "%s:" line' % (CASE_STUDY.name, key))
     reviewer = info['Reviewer']
+    try:
+        date_iso = datetime.datetime.strptime(info['Date'], '%d %B %Y').date().isoformat()
+    except ValueError:
+        raise BuildError('Date must read like "12 October 2026", got: %s' % info['Date'])
 
     def post(body):
         return ('<article class="post">\n'
@@ -254,6 +263,22 @@ def build():
     crumbs = '<span class="cat">%s</span>' % esc(meta['category']) + ''.join(
         '<span class="tag">%s</span>' % esc(t.strip()) for t in meta['tags'].split(',') if t.strip())
 
+    url = 'https://zainsplace.github.io/roblox-security/'
+    # Article metadata for search and link previews. "<" is escaped so no text can close the tag.
+    jsonld = json.dumps({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        'headline': heading,
+        'description': meta['description'],
+        'url': url,
+        'mainEntityOfPage': url,
+        'datePublished': date_iso,
+        'dateModified': date_iso,
+        'image': 'https://zainsplace.github.io/og.png',
+        'author': {'@type': 'Person', 'name': 'Zain', 'alternateName': reviewer,
+                   'url': 'https://zainsplace.github.io/'},
+    }, ensure_ascii=False).replace('<', '\\u003c')
+
     page = TEMPLATE.read_text(encoding='utf-8').replace('\r\n', '\n')
     values = {
         'title': html.escape(meta['title']),
@@ -262,6 +287,8 @@ def build():
         'crumbs': crumbs,
         'posts': '\n'.join(posts),
         'contact': inline(contact[0][1]),
+        'date_iso': date_iso,
+        'jsonld': jsonld,
     }
     for key, value in values.items():
         if '{{%s}}' % key not in page:

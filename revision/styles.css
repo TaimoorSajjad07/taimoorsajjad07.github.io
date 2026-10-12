@@ -254,6 +254,7 @@ body {
   border-top: 1px solid var(--border);
   flex-shrink: 0;
 }
+.sidebar-home { text-decoration: none; margin-bottom: 2px; }
 .sidebar-av-btn {
   display: flex;
   align-items: center;
