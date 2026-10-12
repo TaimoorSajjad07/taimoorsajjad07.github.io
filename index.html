@@ -92,8 +92,8 @@ h1 { font-weight: 500; font-size: clamp(3.4rem, 11vw, 7.5rem); line-height: 0.95
   white-space: pre;
 }
 /* Room for the rows before the script fills them, so nothing below jumps.
-   The text is 56 bytes: 4 rows of 16, or 10 rows of 6 on a phone. */
-#dump { min-height: calc(4 * 1.9em + 2rem); }
+   Rows break after a space, so the 56 bytes take 5 rows of up to 16, or 6 rows of up to 10 on a phone. */
+#dump { min-height: calc(5 * 1.9em + 2rem); }
 #dump:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-radius: 2px; }
 .dump .row { display: block; }
 .dump .off { color: var(--muted); margin-right: 1.5ch; }
@@ -133,10 +133,14 @@ dd { margin: 0; }
   dd { margin-bottom: 0.9rem; }
   .pair { grid-template-columns: 1fr; gap: 1.25rem; }
   td:first-child { white-space: normal; }
-  .dump { font-size: 0.75rem; }
-  #dump { min-height: calc(10 * 1.9em + 2rem); }
+  /* 10 bytes a row with a 4-digit offset fits a 360px screen and keeps every word whole. */
+  .dump { font-size: 0.6875rem; }
+  .dump .off { margin-right: 1ch; }
+  #dump { min-height: calc(6 * 1.9em + 2rem); }
   th:nth-child(2), td:nth-child(2) { padding-right: 0; }
 }
+/* Below 384px the 10-byte rows need 10px type to fit without scrolling. */
+@media (max-width: 24rem) { .dump { font-size: 0.625rem; } }
 @media (prefers-reduced-motion: reduce) { .dump .b, .dump .c { transition: none; } }
 </style>
 </head>
@@ -151,10 +155,11 @@ dd { margin: 0; }
 <li><a href="https://github.com/zainsplace">GitHub</a></li>
 </ul>
 <div class="dump" id="dump" tabindex="0" role="img" data-text="zainsplace // cyber student. ctfs, bug bounties, cloud.&#10;" aria-label="Hexdump of the text: zainsplace // cyber student. ctfs, bug bounties, cloud."></div>
-<noscript><pre class="dump dump-static" aria-hidden="true">00000000  7a 61 69 6e 73 70 6c 61  63 65 20 2f 2f 20 63 79  |zainsplace // cy|
-00000010  62 65 72 20 73 74 75 64  65 6e 74 2e 20 63 74 66  |ber student. ctf|
-00000020  73 2c 20 62 75 67 20 62  6f 75 6e 74 69 65 73 2c  |s, bug bounties,|
-00000030  20 63 6c 6f 75 64 2e 0a                           | cloud..|</pre></noscript>
+<noscript><pre class="dump dump-static" aria-hidden="true">00000000  7a 61 69 6e 73 70 6c 61  63 65 20 2f 2f 20        |zainsplace // |
+0000000e  63 79 62 65 72 20 73 74  75 64 65 6e 74 2e 20     |cyber student. |
+0000001d  63 74 66 73 2c 20 62 75  67 20                    |ctfs, bug |
+00000027  62 6f 75 6e 74 69 65 73  2c 20                    |bounties, |
+00000031  63 6c 6f 75 64 2e 0a                              |cloud..|</pre></noscript>
 
 <section>
 <h2>Projects</h2>

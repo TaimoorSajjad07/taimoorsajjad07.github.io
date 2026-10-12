@@ -8,6 +8,7 @@
   var narrow = window.matchMedia('(max-width: 40rem)');
   var timer = null;
   var perRow = 16;
+  var rows = [];       // [start, end) byte ranges, one per printed row
   var lit = -1;        // the byte lit with its character, or -1
   var pinned = false;  // a tap keeps it lit until the next tap
   var started = false;
@@ -15,19 +16,39 @@
   function hex(n, w) { var s = n.toString(16); while (s.length < w) s = '0' + s; return s; }
   function printable(code) { return code >= 32 && code < 127 ? String.fromCharCode(code) : '.'; }
 
+  // Rows break after a space, so every word stays whole on its row; a word longer than a
+  // row is the only thing ever split. Offsets still give each row's true byte position.
+  function layout(bytes) {
+    var tokens = [], t = 0, out = [], cur = null;
+    for (var k = 0; k < bytes.length; k++) {
+      if (bytes[k] === 32 || bytes[k] === 10 || k === bytes.length - 1) { tokens.push([t, k + 1]); t = k + 1; }
+    }
+    tokens.forEach(function (tok) {
+      if (cur && tok[1] - cur[0] <= perRow) { cur[1] = tok[1]; return; }
+      if (cur) out.push(cur);
+      var s = tok[0];
+      while (tok[1] - s > perRow) { out.push([s, s + perRow]); s += perRow; }
+      cur = [s, tok[1]];
+    });
+    if (cur) out.push(cur);
+    return out;
+  }
+
   function build(animate) {
     if (timer) { clearInterval(timer); timer = null; }
     var bytes = [];
     for (var i = 0; i < text.length; i++) bytes.push(text.charCodeAt(i));
+    rows = layout(bytes);
     var frag = document.createDocumentFragment();
-    for (var r = 0; r < bytes.length; r += perRow) {
+    for (var ri = 0; ri < rows.length; ri++) {
+      var r = rows[ri][0];
       var row = document.createElement('span');
       row.className = 'row';
       var off = document.createElement('span');
       off.className = 'off';
-      off.textContent = hex(r, 8);
+      off.textContent = hex(r, perRow < 16 ? 4 : 8);
       row.appendChild(off);
-      var slice = bytes.slice(r, r + perRow);
+      var slice = bytes.slice(r, rows[ri][1]);
       for (var k = 0; k < perRow; k++) {
         if (k === perRow / 2) { var g = document.createElement('span'); g.className = 'gap'; row.appendChild(g); }
         var b = document.createElement('span');
@@ -88,6 +109,17 @@
     var pair = dump.querySelectorAll('[data-i="' + i + '"]');
     for (var p = 0; p < pair.length; p++) pair[p].classList.add('on');
   }
+  // The byte in the same column of the row above or below, or that row's last byte.
+  function sameColumn(i, step) {
+    for (var ri = 0; ri < rows.length; ri++) {
+      if (i >= rows[ri][0] && i < rows[ri][1]) {
+        var to = rows[ri + step];
+        if (!to) return i;
+        return Math.min(to[0] + (i - rows[ri][0]), to[1] - 1);
+      }
+    }
+    return i;
+  }
   function indexOf(el) { return el && el.dataset && el.dataset.i !== undefined ? Number(el.dataset.i) : -1; }
 
   // Mouse: the byte or character under the pointer lights its partner.
@@ -112,8 +144,8 @@
     switch (e.key) {
       case 'ArrowRight': next = Math.min(last, i + 1); break;
       case 'ArrowLeft': next = Math.max(0, i - 1); break;
-      case 'ArrowDown': next = Math.min(last, i + perRow); break;
-      case 'ArrowUp': next = Math.max(0, i - perRow); break;
+      case 'ArrowDown': next = sameColumn(i, 1); break;
+      case 'ArrowUp': next = sameColumn(i, -1); break;
       case 'Home': next = 0; break;
       case 'End': next = last; break;
       case 'Escape': pinned = false; light(-1); return;
@@ -124,7 +156,7 @@
   });
 
   function render() {
-    perRow = narrow.matches ? 6 : 16;
+    perRow = narrow.matches ? 10 : 16;
     build(!started);
     started = true;
   }
