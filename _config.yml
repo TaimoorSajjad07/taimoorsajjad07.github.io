@@ -1,0 +1,11 @@
+# GitHub Pages builds this repo with Jekyll. Everything not excluded here is
+# published, and Markdown is turned into web pages. These are working files,
+# not site content: they stay in the repo but are not served.
+exclude:
+  - README.md
+  - AUDIT.md
+  - docs
+  - reference
+  - design-system
+  - revision/build_inline.py
+  - revision/validate_data.py
