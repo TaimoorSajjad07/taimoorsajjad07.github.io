@@ -67,6 +67,8 @@ function unitData() {
    `state` below is a live view onto the active unit so the rest of the app can
    keep using state.rag / state.xp / state.theme unchanged. */
 const STATE_KEY = 'rev_state';
+const CORRUPT_KEY = 'rev_state_corrupt';
+let storeWasCorrupt = false;
 const GLOBAL_KEYS = new Set(['theme', 'profile', 'activeUnit']);
 
 function defaultUnitState() {
@@ -292,6 +294,12 @@ function loadStore() {
   try {
     return coerceStore(JSON.parse(raw));
   } catch {
+    // The next save would overwrite the damaged value, which may still be
+    // recoverable by hand. Keep the first copy and never replace it.
+    try {
+      if (localStorage.getItem(CORRUPT_KEY) === null) localStorage.setItem(CORRUPT_KEY, raw);
+    } catch { /* storage blocked: nothing to keep */ }
+    storeWasCorrupt = true;
     return defaultStore();
   }
 }
@@ -5297,6 +5305,9 @@ document.addEventListener('DOMContentLoaded', () => {
   loadData(unitLetters());
   updateNavAvatar();
   navigate('home');
+  if (storeWasCorrupt) {
+    toast('Your saved progress could not be read, so the site started fresh. A copy of the old data was kept in this browser.', 8000, 'error');
+  }
 });
 
 /* Flashcards: Space flips, → is "Got it", ← is "Didn't know". The arrows only
