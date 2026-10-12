@@ -3,127 +3,166 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Roblox game security reviews</title>
+<title>Roblox game security reviews | lce_te</title>
+<meta name="description" content="Written security reviews for Roblox developers, with a worked case study: five remote-trust flaws found, fixed and verified.">
+<meta name="theme-color" content="#222222">
 <style>
-body { font-family: system-ui, sans-serif; color: #000; background: #fff; max-width: 46rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
-a { color: #000; }
-table { border-collapse: collapse; }
-th, td { border: 1px solid #000; padding: 0.25rem 0.5rem; text-align: left; }
-code { font-family: ui-monospace, Consolas, monospace; }
+:root {
+  --bg: #222222;
+  --bar: #1a1a1a;
+  --card: #2a2a2a;
+  --line: #3b3b3b;
+  --text: #e4e4e4;
+  --muted: #9c9c9c;
+  --link: #5aa9ff;
+  --crit: #ff6b6b;
+  --high: #f0a93b;
+  --ok: #4cc38a;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; color-scheme: dark; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+a:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; border-radius: 2px; }
+code { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 0.9em; background: #171717; border: 1px solid var(--line); border-radius: 4px; padding: 0.1em 0.35em; }
+
+.bar { background: var(--bar); border-bottom: 1px solid var(--line); }
+.bar .in { max-width: 58rem; margin: 0 auto; padding: 0.8rem 1rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+.bar .brand { font-weight: 600; color: var(--text); }
+.bar nav { display: flex; gap: 1.25rem; margin-left: auto; }
+.bar nav a { color: var(--muted); }
+.bar nav a:hover { color: var(--text); text-decoration: none; }
+
+.page { max-width: 58rem; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+.title h1 { font-size: 1.75rem; line-height: 1.25; margin: 0 0 0.6rem; font-weight: 600; }
+.crumbs { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-bottom: 1.5rem; color: var(--muted); font-size: 0.9rem; }
+.cat { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--text); }
+.cat::before { content: ""; width: 0.7rem; height: 0.7rem; background: var(--link); display: inline-block; border-radius: 2px; }
+.tag { background: #333; border-radius: 4px; padding: 0.05rem 0.5rem; color: var(--muted); font-size: 0.85rem; }
+
+.post { display: grid; grid-template-columns: 3.25rem minmax(0, 1fr); gap: 0.9rem; padding: 1.1rem 0; border-top: 1px solid var(--line); }
+.avatar { width: 2.75rem; height: 2.75rem; border-radius: 50%; background: #3a4a63; color: #fff; display: grid; place-items: center; font-weight: 600; }
+.meta { display: flex; flex-wrap: wrap; gap: 0.2rem 0.75rem; align-items: baseline; color: var(--muted); font-size: 0.9rem; margin-bottom: 0.4rem; }
+.meta strong { color: var(--text); }
+.meta .role { background: #333; border-radius: 4px; padding: 0 0.4rem; font-size: 0.8rem; }
+.meta .when { margin-left: auto; }
+.what h2 { font-size: 1.25rem; line-height: 1.3; margin: 0.2rem 0 0.8rem; font-weight: 600; }
+.what p { margin: 0 0 0.9rem; max-width: 46rem; }
+.what ol { margin: 0; padding-left: 1.3rem; max-width: 46rem; }
+.what li { margin-bottom: 0.45rem; }
+
+.facts { margin: 0; display: grid; grid-template-columns: 9.5rem 1fr; gap: 0.55rem 1rem; max-width: 46rem; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; }
+
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 6px; }
+th, td { text-align: left; padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 500; font-size: 0.9rem; }
+tr:last-child td { border-bottom: 0; }
+
+.chip { display: inline-block; font-size: 0.75rem; font-weight: 600; line-height: 1; padding: 0.28rem 0.5rem; border-radius: 999px; border: 1px solid currentColor; vertical-align: middle; white-space: nowrap; }
+.sev-critical { color: var(--crit); }
+.sev-high { color: var(--high); }
+.ok { color: var(--ok); }
+
+.contact { margin-top: 1rem; border: 1px solid var(--line); background: var(--card); border-radius: 6px; padding: 1rem 1.1rem; }
+.contact p { margin: 0; }
+
+@media (max-width: 40rem) {
+  .post { grid-template-columns: minmax(0, 1fr); }
+  .who { display: none; }
+  .facts { grid-template-columns: 1fr; gap: 0; }
+  .facts dd { margin-bottom: 0.7rem; }
+  .meta .when { margin-left: 0; }
+}
 </style>
 </head>
 <body>
-<p><a href="/">Home</a></p>
+<header class="bar"><div class="in">
+<a class="brand" href="/roblox-security/">Game security reviews</a>
+<nav aria-label="Site"><a href="/">Portfolio</a><a href="#summary">Summary</a><a href="#recommendations">Recommendations</a></nav>
+</div></header>
 
-<h1>Roblox game security reviews</h1>
+<main class="page">
+<div class="title">
+<h1>Security review: Remote trust lab</h1>
+<div class="crumbs"><span class="cat">Security reviews</span><span class="tag">remotes</span><span class="tag">race-condition</span><span class="tag">lab</span></div>
+</div>
 
+<article class="post">
+<div class="who"><span class="avatar" aria-hidden="true">L</span></div>
+<div class="what">
+<div class="meta"><strong>lce_te</strong><span class="role">reviewer</span><span class="when">12 October 2026</span></div>
 <p>I review Roblox games for the mistakes exploiters use: remotes that trust the client, prices and rewards decided by the player, race conditions, and fake admin checks. You get a written report with each finding, how it is abused, how to fix it, and how the fix was checked.</p>
-
-<p>I am new to this. The review below is of a test game I built for the purpose, not a client project. I only test games I own or have written permission to test.</p>
-
-<p>Contact: message <strong>lce_te</strong> on Roblox, or see <a href="https://github.com/zainsplace">github.com/zainsplace</a>.</p>
-
-<hr>
-
-<h2>Security review: Remote trust lab</h2>
-<p><strong>Date:</strong> 12 October 2026<br />
-<strong>Reviewer:</strong> lce_te<br />
-<strong>Scope:</strong> one server script (five RemoteEvents: GrantCoins, BuyItem, SaveData, SellItem, AdminCommand) in a test game I built for this review. It is a lab, not a client game.<br />
-<strong>Method:</strong> manual code review, then each finding tested in a private, unpublished place using a test client that fires the same remote calls an exploiter would. Every fix was re-tested against the same attacks.  </p>
-<h3>Summary</h3>
+<p>I am new to this. This review is of a test game I built for the purpose, not a client project. I only test games I own or have written permission to test.</p>
+<dl class="facts">
+<dt>Scope</dt><dd>one server script (five RemoteEvents: GrantCoins, BuyItem, SaveData, SellItem, AdminCommand) in a test game I built for this review. It is a lab, not a client game.</dd>
+<dt>Method</dt><dd>manual code review, then each finding tested in a private, unpublished place using a test client that fires the same remote calls an exploiter would. Every fix was re-tested against the same attacks.</dd>
+</dl>
+</div>
+</article>
+<article class="post">
+<div class="who"><span class="avatar" aria-hidden="true">L</span></div>
+<div class="what">
+<div class="meta"><strong>lce_te</strong><span class="role">reviewer</span><span class="when">12 October 2026</span></div>
+<h2 id="summary">Summary</h2>
 <p>Five findings: four Critical, one High. Every one comes from the same mistake: the server believes what the client tells it. After the fixes, all five attacks fail and normal gameplay still works. Fix first: SaveData and AdminCommand, because they give an exploiter total control in one call.</p>
-<table>
-<thead>
-<tr>
-<th>#</th>
-<th>Finding</th>
-<th>Severity</th>
-<th>Status</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>GrantCoins: client chooses the amount</td>
-<td>Critical</td>
-<td>Verified fixed</td>
-</tr>
-<tr>
-<td>2</td>
-<td>BuyItem: client chooses the price</td>
-<td>Critical</td>
-<td>Verified fixed</td>
-</tr>
-<tr>
-<td>3</td>
-<td>SaveData: server saves a client-supplied table</td>
-<td>Critical</td>
-<td>Verified fixed</td>
-</tr>
-<tr>
-<td>4</td>
-<td>SellItem: race condition double spend</td>
-<td>High</td>
-<td>Verified fixed</td>
-</tr>
-<tr>
-<td>5</td>
-<td>AdminCommand: client supplies its own rank</td>
-<td>Critical</td>
-<td>Verified fixed</td>
-</tr>
-</tbody>
-</table>
-<h3>Findings</h3>
-<h4>1. GrantCoins (Critical)</h4>
-<ul>
-<li>What is wrong: the remote adds whatever number the client sends to the player's coins.</li>
-<li>How it can be abused: <code>GrantCoins:FireServer(1000000)</code>. Result in the test: 100 coins became 1,000,100.</li>
-<li>Impact: unlimited currency for any player.</li>
-<li>Fix: the client only says which pickup it touched, and the server looks up the reward in its own table, with a rate limit. Better still, detect pickups on the server and remove the remote.</li>
-<li>Verification: the same call is ignored.</li>
-</ul>
-<h4>2. BuyItem (Critical)</h4>
-<ul>
-<li>What is wrong: The client supplies the price. Negative values pass the <code>coins &gt;= -5000</code> check, so subtracting one increases the player's coin balance.</li>
-<li>How it can be abused: <code>BuyItem:FireServer("Sword", -5000)</code>. Result: bought a Sword and gained 5,000 coins.</li>
-<li>Impact: unlimited currency and free items.</li>
-<li>Fix: the server keeps a catalog of prices and ignores any price the client sends. Unknown item ids are rejected.</li>
-<li>Verification: the same call buys one Sword at the real price of 100.</li>
-</ul>
-<h4>3. SaveData (Critical)</h4>
-<ul>
-<li>What is wrong: The client submits its entire profile, which the server stores without validation.</li>
-<li>How it can be abused: send a table with any coins, level and inventory. Result: coins 999,999, level 100, 99 Swords.</li>
-<li>Impact: total control over the player's state. In a real game this would also be written to the DataStore.</li>
-<li>Fix: delete the remote. Deleting SaveData removes the client's ability to write arbitrary profile data at all. Validation would still treat client-provided values as authoritative and could miss unexpected fields or malicious changes. The server should own the profile and save only state produced by trusted server logic.</li>
-<li>Verification: the remote no longer exists, so the call cannot be made.</li>
-</ul>
-<h4>4. SellItem (High)</h4>
-<ul>
-<li>What is wrong: The server verifies that the player owns the item, waits to simulate a DataStore or marketplace call, and then removes it. Requests received during the delay can all pass the ownership check.</li>
-<li>How it can be abused: fire the remote 20 times at once. <code>task.wait</code> pauses the first call before the item is removed. It does not lock the inventory or reserve the item. While the first call is waiting, the other 19 calls run, see that the Sword is still present, and pass the same ownership check. They then all resume and award coins. Result: 2 Swords sold 20 times, coins 100 to 1,100, Sword count -18.</li>
-<li>Impact: duplicated currency for items the player never had.</li>
-<li>Fix: change the state first, then yield. Each call then sees the updated inventory.</li>
-<li>Verification: the same 20 calls sell exactly 2 Swords and the count stops at 0.</li>
-</ul>
-<h4>5. AdminCommand (Critical)</h4>
-<ul>
-<li>What is wrong: The server determines admin status using a <code>rank</code> value supplied by the client.</li>
-<li>How it can be abused: <code>AdminCommand:FireServer("givecoins", name, 50000, 99)</code>. Result: +50,000 coins.</li>
-<li>Impact: any player can run admin commands.</li>
-<li>Fix: check the player's UserId against a server-side allowlist, allow only known commands, and validate the arguments (type, integer, range).</li>
-<li>Verification: the same call is ignored.</li>
-</ul>
-<h3>Recommendations</h3>
-<ol>
-<li>Never trust the client for values, prices, identity or ownership. The client asks for an action, the server decides the result.</li>
-<li>Validate every remote argument: type, range, whole number, not NaN.</li>
-<li>Keep prices, rewards and permissions in server-side tables.</li>
-<li>Change state before any yield (DataStore, MarketplaceService, task.wait) so concurrent calls cannot reuse a stale check.</li>
-<li>Rate-limit any remote a client can spam.</li>
-</ol>
-<h3>Out of scope</h3>
-<p>Anything not in the five remotes: DataStore schema, anti-cheat for movement or physics, Roblox platform issues, third-party free models, and any live game. Real games will have flaws this lab does not show.</p>
+<div class="tablewrap"><table><thead><tr><th>#</th><th>Finding</th><th>Severity</th><th>Status</th></tr></thead><tbody><tr><td>1</td><td>GrantCoins: client chooses the amount</td><td><span class="chip sev-critical">Critical</span></td><td><span class="chip ok">Verified fixed</span></td></tr><tr><td>2</td><td>BuyItem: client chooses the price</td><td><span class="chip sev-critical">Critical</span></td><td><span class="chip ok">Verified fixed</span></td></tr><tr><td>3</td><td>SaveData: server saves a client-supplied table</td><td><span class="chip sev-critical">Critical</span></td><td><span class="chip ok">Verified fixed</span></td></tr><tr><td>4</td><td>SellItem: race condition double spend</td><td><span class="chip sev-high">High</span></td><td><span class="chip ok">Verified fixed</span></td></tr><tr><td>5</td><td>AdminCommand: client supplies its own rank</td><td><span class="chip sev-critical">Critical</span></td><td><span class="chip ok">Verified fixed</span></td></tr></tbody></table></div>
+</div>
+</article>
+<article class="post">
+<div class="who"><span class="avatar" aria-hidden="true">L</span></div>
+<div class="what">
+<div class="meta"><strong>lce_te</strong><span class="role">reviewer</span><span class="when">12 October 2026</span></div>
+<h2 id="f1">1. GrantCoins <span class="chip sev-critical">Critical</span></h2><dl class="facts"><dt>What is wrong</dt><dd>the remote adds whatever number the client sends to the player's coins.</dd><dt>How it can be abused</dt><dd><code>GrantCoins:FireServer(1000000)</code>. Result in the test: 100 coins became 1,000,100.</dd><dt>Impact</dt><dd>unlimited currency for any player.</dd><dt>Fix</dt><dd>the client only says which pickup it touched, and the server looks up the reward in its own table, with a rate limit. Better still, detect pickups on the server and remove the remote.</dd><dt>Verification</dt><dd>the same call is ignored.</dd></dl>
+</div>
+</article>
+<article class="post">
+<div class="who"><span class="avatar" aria-hidden="true">L</span></div>
+<div class="what">
+<div class="meta"><strong>lce_te</strong><span class="role">reviewer</span><span class="when">12 October 2026</span></div>
+<h2 id="f2">2. BuyItem <span class="chip sev-critical">Critical</span></h2><dl class="facts"><dt>What is wrong</dt><dd>The client supplies the price. Negative values pass the <code>coins &gt;= -5000</code> check, so subtracting one increases the player's coin balance.</dd><dt>How it can be abused</dt><dd><code>BuyItem:FireServer("Sword", -5000)</code>. Result: bought a Sword and gained 5,000 coins.</dd><dt>Impact</dt><dd>unlimited currency and free items.</dd><dt>Fix</dt><dd>the server keeps a catalog of prices and ignores any price the client sends. Unknown item ids are rejected.</dd><dt>Verification</dt><dd>the same call buys one Sword at the real price of 100.</dd></dl>
+</div>
+</article>
+<article class="post">
+<div class="who"><span class="avatar" aria-hidden="true">L</span></div>
+<div class="what">
+<div class="meta"><strong>lce_te</strong><span class="role">reviewer</span><span class="when">12 October 2026</span></div>
+<h2 id="f3">3. SaveData <span class="chip sev-critical">Critical</span></h2><dl class="facts"><dt>What is wrong</dt><dd>The client submits its entire profile, which the server stores without validation.</dd><dt>How it can be abused</dt><dd>send a table with any coins, level and inventory. Result: coins 999,999, level 100, 99 Swords.</dd><dt>Impact</dt><dd>total control over the player's state. In a real game this would also be written to the DataStore.</dd><dt>Fix</dt><dd>delete the remote. Deleting SaveData removes the client's ability to write arbitrary profile data at all. Validation would still treat client-provided values as authoritative and could miss unexpected fields or malicious changes. The server should own the profile and save only state produced by trusted server logic.</dd><dt>Verification</dt><dd>the remote no longer exists, so the call cannot be made.</dd></dl>
+</div>
+</article>
+<article class="post">
+<div class="who"><span class="avatar" aria-hidden="true">L</span></div>
+<div class="what">
+<div class="meta"><strong>lce_te</strong><span class="role">reviewer</span><span class="when">12 October 2026</span></div>
+<h2 id="f4">4. SellItem <span class="chip sev-high">High</span></h2><dl class="facts"><dt>What is wrong</dt><dd>The server verifies that the player owns the item, waits to simulate a DataStore or marketplace call, and then removes it. Requests received during the delay can all pass the ownership check.</dd><dt>How it can be abused</dt><dd>fire the remote 20 times at once. <code>task.wait</code> pauses the first call before the item is removed. It does not lock the inventory or reserve the item. While the first call is waiting, the other 19 calls run, see that the Sword is still present, and pass the same ownership check. They then all resume and award coins. Result: 2 Swords sold 20 times, coins 100 to 1,100, Sword count -18.</dd><dt>Impact</dt><dd>duplicated currency for items the player never had.</dd><dt>Fix</dt><dd>change the state first, then yield. Each call then sees the updated inventory.</dd><dt>Verification</dt><dd>the same 20 calls sell exactly 2 Swords and the count stops at 0.</dd></dl>
+</div>
+</article>
+<article class="post">
+<div class="who"><span class="avatar" aria-hidden="true">L</span></div>
+<div class="what">
+<div class="meta"><strong>lce_te</strong><span class="role">reviewer</span><span class="when">12 October 2026</span></div>
+<h2 id="f5">5. AdminCommand <span class="chip sev-critical">Critical</span></h2><dl class="facts"><dt>What is wrong</dt><dd>The server determines admin status using a <code>rank</code> value supplied by the client.</dd><dt>How it can be abused</dt><dd><code>AdminCommand:FireServer("givecoins", name, 50000, 99)</code>. Result: +50,000 coins.</dd><dt>Impact</dt><dd>any player can run admin commands.</dd><dt>Fix</dt><dd>check the player's UserId against a server-side allowlist, allow only known commands, and validate the arguments (type, integer, range).</dd><dt>Verification</dt><dd>the same call is ignored.</dd></dl>
+</div>
+</article>
+<article class="post">
+<div class="who"><span class="avatar" aria-hidden="true">L</span></div>
+<div class="what">
+<div class="meta"><strong>lce_te</strong><span class="role">reviewer</span><span class="when">12 October 2026</span></div>
+<h2 id="recommendations">Recommendations</h2><ol><li>Never trust the client for values, prices, identity or ownership. The client asks for an action, the server decides the result.</li><li>Validate every remote argument: type, range, whole number, not NaN.</li><li>Keep prices, rewards and permissions in server-side tables.</li><li>Change state before any yield (DataStore, MarketplaceService, task.wait) so concurrent calls cannot reuse a stale check.</li><li>Rate-limit any remote a client can spam.</li></ol>
+</div>
+</article>
+<article class="post">
+<div class="who"><span class="avatar" aria-hidden="true">L</span></div>
+<div class="what">
+<div class="meta"><strong>lce_te</strong><span class="role">reviewer</span><span class="when">12 October 2026</span></div>
+<h2 id="out-of-scope">Out of scope</h2><p>Anything not in the five remotes: DataStore schema, anti-cheat for movement or physics, Roblox platform issues, third-party free models, and any live game. Real games will have flaws this lab does not show.</p>
+</div>
+</article>
+
+<div class="contact"><p>Want a review of your game? Message <strong>lce_te</strong> on Roblox, or find me on <a href="https://github.com/zainsplace">GitHub</a>.</p></div>
+</main>
 </body>
 </html>
