@@ -1,6 +1,6 @@
 // The landing page hexdump. Kept out of index.html so its CSP can forbid inline scripts.
 (function () {
-  var text = "zainsplace // cyber student. web, pwn, cloud.\n";
+  var text = "zainsplace // cyber student. ctfs, bug bounties, cloud.\n";
   var dump = document.getElementById('dump');
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var timer = null;
