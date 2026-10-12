@@ -311,6 +311,8 @@ elif before is not None and before != open(inline_path, encoding='utf-8').read()
 # load, so a short allow-list of link-only hosts is permitted: Pearson's own page,
 # which replaces hosting their copyrighted past papers.
 LINK_ONLY_HOSTS = ('qualifications.pearson.com',)
+# The page's own address, named for search engines and link previews. Never fetched.
+SELF_URL_TAG = re.compile(r'<(link rel="canonical"|meta property="og:url") ')
 for name in ('index.html', 'styles.css', 'app.js'):
     txt = open(os.path.join(HERE, name), encoding='utf-8').read()
     for m in re.finditer(r'https?://[^\s"\')]+', txt):
@@ -319,6 +321,9 @@ for name in ('index.html', 'styles.css', 'app.js'):
             continue
         host = re.sub(r'^https?://', '', url).split('/')[0]
         if host in LINK_ONLY_HOSTS and txt[max(0, m.start() - 6):m.start()] == 'href="':
+            continue
+        tag = txt[txt.rfind('<', 0, m.start()):m.start()]
+        if host == 'zainsplace.github.io' and SELF_URL_TAG.match(tag):
             continue
         err('%s references an external URL, breaking offline use: %s' % (name, url))
 
